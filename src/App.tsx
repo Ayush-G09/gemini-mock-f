@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useSelector } from "react-redux";
+import { RouterProvider } from "react-router-dom";
+import styled, { ThemeProvider } from "styled-components";
+import { router } from "./routes";
+import { generateTheme } from "./theme";
+import { RootState } from "./types/redux";
 
 function App() {
+  const mode = useSelector((state: RootState) => state.mode);
+  const currentTheme = generateTheme(mode);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsxd</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={currentTheme}>
+      <Root>
+        <RouterProvider router={router} />
+      </Root>
+    </ThemeProvider>
   );
 }
+
+const Root = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: ${(p) => p.theme.bg.base100};
+  transition: background-color 0.3s, transform 0.1s;
+`;
 
 export default App;
