@@ -12,6 +12,9 @@ import { formSchema } from "../../schema/formSchema";
 import { z } from "zod";
 import OtpInput from "../../components/OtpInput";
 import Label from "../../components/Label";
+import { useSelector } from "react-redux";
+import { modeType, RootState } from "../../types/redux";
+import { useNavigate } from "react-router-dom";
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -21,6 +24,9 @@ function Home() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const mode = useSelector((state: RootState) => state.mode);
+
+  const navigate = useNavigate();
 
   const {
     control,
@@ -70,7 +76,13 @@ function Home() {
     if (otp === "111111") {
       console.log("OTP Verified:", otp);
       setOtpError("");
-      // proceed further
+      const userData = {
+        mobileNumber: getValues("mobileNumber"),
+        country: getValues("country"),
+      };
+
+      localStorage.setItem("userData", JSON.stringify(userData));
+      navigate("/app");
     } else {
       setOtpError("Invalid OTP. Please try again.");
     }
@@ -91,6 +103,7 @@ function Home() {
   return (
     <HomeContainer>
       <FormCard
+        mode={mode}
         as="form"
         onSubmit={
           otpSent
@@ -187,12 +200,19 @@ const HomeContainer = styled.div`
   justify-content: center;
 `;
 
-const FormCard = styled.div`
-  background: linear-gradient(
+const FormCard = styled.div<{ mode: modeType }>`
+  background: ${(p) =>
+    p.mode === "light"
+      ? `linear-gradient(
     160deg,
     rgba(56, 139, 255, 0.3) 0%,
     rgba(255, 255, 255, 1) 30%
-  );
+  )`
+      : `linear-gradient(
+    160deg,
+    rgba(56, 139, 255, 0.3) 0%,
+    rgba(0, 0, 0, 1) 30%
+  )`};
   width: 40%;
   height: 70%;
   border-radius: 8px;

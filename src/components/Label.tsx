@@ -14,7 +14,7 @@ function Label({
   children,
   weight = 400,
   size = "1rem",
-  color = "black",
+  color,
   sx,
   onClick,
 }: Props) {
@@ -34,7 +34,7 @@ function Label({
 const StyledLabel = styled.div<{
   $weight: number;
   size: string;
-  color: string;
+  color?: string;
 }>`
   font-weight: ${(p) => p.$weight};
   font-size: ${(p) => p.size};

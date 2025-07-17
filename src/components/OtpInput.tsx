@@ -75,6 +75,8 @@ const DigitInput = styled.input`
   border-radius: 8px;
   outline: none;
   transition: 0.2s all ease;
+  background-color: transparent;
+  color: ${(p) => p.theme.color.text};
 
   &:focus {
     border-color: #007bff;

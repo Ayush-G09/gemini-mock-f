@@ -7,6 +7,8 @@ import {
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import styled, { CSSProperties } from "styled-components";
+import { RootState } from "../types/redux";
+import { useSelector } from "react-redux";
 
 type Props = {
   value: string;
@@ -40,6 +42,7 @@ function InputField({
     showInput: false,
     showPassword: false,
   });
+  const mode = useSelector((state: RootState) => state.mode);
 
   const handleDivFocus = () => {
     setState((prev) => ({ ...prev, showInput: true }));
@@ -72,7 +75,7 @@ function InputField({
         <FontAwesomeIcon color="#a9a9a9" icon={logo} />
         <InputWrapper>
           <Label
-            color={value ? "black" : state.showInput ? "black" : "#d3d3d3"}
+            color={value ? mode === "light" ? "black" : "white" : state.showInput ? mode === "light" ? "black" : "white" : "#d3d3d3"}
             size={value ? "0.8rem" : state.showInput ? "0.8rem" : "1rem"}
           >
             {name}
