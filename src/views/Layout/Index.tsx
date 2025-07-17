@@ -18,8 +18,8 @@ function Layout() {
 }
 
 const OutletWrapper = styled.div`
-width: 100%;
-height: 92%;
+  width: 100%;
+  height: 92%;
 `;
 
 const Container = styled.div`
@@ -31,7 +31,7 @@ const Container = styled.div`
 const Content = styled.div`
   flex: 1;
   height: 100%;
-  disply: flex;
+  display: flex;
   flex-direction: column;
 `;
 
