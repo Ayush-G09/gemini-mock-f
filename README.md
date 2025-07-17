@@ -1,46 +1,115 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 🌌 Gemini Mock Frontend Clone
 
-## Available Scripts
+A polished and functional frontend clone of Gemini with advanced chat interface behaviors such as infinite scroll, image upload, typing indication, toast notifications, throttling, and form validation.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Live Demo
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+🔗 [View Live App on Vercel](https://gemini-mock-f.vercel.app/app)  
+🧪 **Mock OTP for Login**: `111111`
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+---
 
-### `npm test`
+## 📁 Repository
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+📦 [GitHub Repository](https://github.com/Ayush-G09/gemini-mock-f)
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠️ Setup Instructions
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Follow these steps to set up the project locally:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Clone the Repository
 
-### `npm run eject`
+```bash
+git clone https://github.com/Ayush-G09/gemini-mock-f.git
+cd gemini-mock-f
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 2. Install Dependencies
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 3. Run the Development Server
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm start
+```
 
-## Learn More
+### 4. Build for Production
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
+
+---
+
+## ✅ Key Features & Implementations
+
+### 🔁 Infinite Scroll
+- Implemented using a custom `useInfiniteScroll` hook.
+- Automatically loads older messages on scroll.
+
+### ⚙️ Throttling
+- Input fields like search and typing are throttled using a custom `useThrottle` hook.
+- Optimizes performance and reduces API load.
+
+### 📤 Image Upload
+- Allows users to upload and send images.
+- Previews the image before sending.
+
+### ✍️ Typing Indicator
+- Displays a dynamic “Typing…” animation when a user is composing a message.
+
+### 🧪 Form Validation
+- Built with `react-hook-form`.
+- Validates inputs such as email, OTP, and message content.
+
+### 📦 Pagination
+- Server-side pagination for chat messages.
+- Triggered through infinite scroll for scalability.
+
+### 🔔 Toast Notifications
+- Real-time feedback using toast popups for actions like:
+  - Message sent
+  - Image uploaded
+  - Validation errors
+
+### 📱 Responsive & Accessible
+- Fully responsive across all device types.
+- Built with accessibility in mind for better user experience.
+
+---
+
+## 📸 Screenshots *(Optional)*
+
+_Add UI/UX screenshots here to visually showcase the project._
+
+---
+
+## 👨‍💻 Tech Stack
+
+- **React** + **TypeScript**
+- **React Router**
+- **React Hook Form**
+- **Custom Hooks** (e.g., Throttle, Infinite Scroll)
+- **CSS Modules / TailwindCSS** *(if applicable)*
+- **Vercel** for deployment
+
+---
+
+## 📨 Submission Details
+
+- Submitted for the **Kuvaka Tech Gemini Frontend Clone Assignment**.
+- **Mock OTP for Login**: `111111`
+
+---
+
+Feel free to ⭐ the repo if you found it helpful!
