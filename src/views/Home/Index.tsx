@@ -49,32 +49,32 @@ function Home() {
   });
 
   const getCountryCodes = useCallback(async () => {
-  try {
-    const res = await axiosInstance.get(
-      "https://restcountries.com/v3.1/all?fields=name,idd,flags"
-    );
-    const phoneCodes = res.data
-      .map((country: any) => {
-        const root = country.idd?.root || "";
-        const suffixes = country.idd?.suffixes || [""];
-        return suffixes.map((suffix: string) => ({
-          name: country.name.common,
-          callingCode: `${root}${suffix}`,
-          flag: country.flags.png,
-        }));
-      })
-      .flat();
-    setCountryCodes(phoneCodes);
-  } catch {
-    const notification = {
-      type: "error",
-      title: "Error: Country codes",
-      msg: "Error fetching country codes, try again",
-      time: new Date(),
-    } as NotificationType;
-    dispatch(addNotification(notification));
-  }
-}, [dispatch]);
+    try {
+      const res = await axiosInstance.get(
+        "https://restcountries.com/v3.1/all?fields=name,idd,flags"
+      );
+      const phoneCodes = res.data
+        .map((country: any) => {
+          const root = country.idd?.root || "";
+          const suffixes = country.idd?.suffixes || [""];
+          return suffixes.map((suffix: string) => ({
+            name: country.name.common,
+            callingCode: `${root}${suffix}`,
+            flag: country.flags.png,
+          }));
+        })
+        .flat();
+      setCountryCodes(phoneCodes);
+    } catch {
+      const notification = {
+        type: "error",
+        title: "Error: Country codes",
+        msg: "Error fetching country codes, try again",
+        time: new Date(),
+      } as NotificationType;
+      dispatch(addNotification(notification));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     getCountryCodes();
@@ -106,25 +106,32 @@ function Home() {
     const notification = {
       type: "success",
       title: "OTP Sent",
-      msg: "OTP send to your mobile number.",
+      msg: "OTP sent to your mobile number.",
       time: new Date(),
     } as NotificationType;
     dispatch(addNotification(notification));
   };
 
+  useEffect(() => {
+  const handleEnter = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (otpSent) {
+        handleOtpSubmit();
+      } else {
+        handleSubmit(onSubmit)();
+      }
+    }
+  };
+  window.addEventListener("keydown", handleEnter);
+  return () => window.removeEventListener("keydown", handleEnter);
+}, [otpSent, handleSubmit, onSubmit, handleOtpSubmit]);
+
   return (
     <HomeContainer>
+      <FormCardWrapper onSubmit={otpSent ? handleOtpSubmit : handleSubmit(onSubmit)}>
       <FormCard
         mode={mode}
-        as="form"
-        onSubmit={
-          otpSent
-            ? (e) => {
-                e.preventDefault();
-                handleOtpSubmit();
-              }
-            : handleSubmit(onSubmit)
-        }
       >
         {!otpSent && (
           <>
@@ -155,7 +162,6 @@ function Home() {
                 />
               )}
             />
-
             <Controller
               control={control}
               name="mobileNumber"
@@ -193,23 +199,40 @@ function Home() {
                 setOtpError("");
               }}
             />
+            
           </>
         )}
 
-        <Button type="submit" sx={{ width: "80%", fontSize: "1rem" }}>
+        <Button
+          type="submit"
+          sx={{
+            width: "100%",
+            maxWidth: "300px",
+            fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
+          }}
+        >
           {otpSent ? "Verify OTP" : "Get OTP"}
         </Button>
       </FormCard>
+      </FormCardWrapper>
     </HomeContainer>
   );
-}
+};
+
+const FormCardWrapper = styled.form`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
 
 const HomeContainer = styled.div`
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
 `;
 
 const FormCard = styled.div<{ mode: modeType }>`
@@ -225,20 +248,36 @@ const FormCard = styled.div<{ mode: modeType }>`
     rgba(56, 139, 255, 0.3) 0%,
     rgba(0, 0, 0, 1) 30%
   )`};
-  width: 40%;
-  height: 70%;
+
+  width: 30%;
+  height: auto;
+  padding: 2rem;
   border-radius: 8px;
   box-sizing: border-box;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   gap: 15px;
+
+  @media (max-width: 1024px) {
+    width: 60%;
+  }
+
+  @media (max-width: 768px) {
+    width: 80%;
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    width: 95%;
+    padding: 1rem;
+  }
 `;
 
 const SectionTitle = styled.div`
-  width: 80%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 `;
