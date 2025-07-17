@@ -24,14 +24,23 @@ type Props = {
   setSidebarOpened: (val: boolean) => void;
 };
 
+type State = {
+  hoveredChat: string | null;
+  deleteModal: boolean;
+  openedByClick: boolean;
+  id: string;
+};
+
 function Sidebar({ open, setSidebarOpened }: Props) {
+  const [state, setState] = useState<State>({
+    hoveredChat: null,
+    deleteModal: false,
+    openedByClick: false,
+    id: "",
+  });
   const mode = useSelector((state: RootState) => state.mode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [hoveredChat, setHoveredChat] = useState<string | null>(null);
-  const [deleteModal, setDeleteModal] = useState<boolean>(false);
-  const [id, setId] = useState<string>("");
-  const [openedByClick, setOpenedByClick] = useState(false);
 
   const toggleMode = () => {
     const newMode = mode === "dark" ? "light" : "dark";
@@ -55,32 +64,32 @@ function Sidebar({ open, setSidebarOpened }: Props) {
         sidebarRef.current.style.width = "270px";
       }
       setSidebarOpened(true);
-      setOpenedByClick(true);
+      setState((prev) => ({ ...prev, openedByClick: true }));
     } else {
       if (isDesktop) {
         sidebarRef.current.style.width = "90px";
       }
       setSidebarOpened(false);
-      setOpenedByClick(false);
+      setState((prev) => ({ ...prev, openedByClick: false }));
     }
   };
 
   const handleMouseEnter = () => {
-    if (!openedByClick && sidebarRef.current) {
+    if (!state.openedByClick && sidebarRef.current) {
       sidebarRef.current.style.width = "270px";
       setSidebarOpened(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (!openedByClick && sidebarRef.current) {
+    if (!state.openedByClick && sidebarRef.current) {
       sidebarRef.current.style.width = "90px";
       setSidebarOpened(false);
     }
   };
 
   const handleDeleteChat = () => {
-    deleteChat(id);
+    deleteChat(state.id);
     handleCloseDeleteModal();
     const notification = {
       type: "success",
@@ -93,8 +102,8 @@ function Sidebar({ open, setSidebarOpened }: Props) {
   };
 
   const handleCloseDeleteModal = () => {
-    setDeleteModal(false);
-    setId("");
+    setState((prev) => ({ ...prev, deleteModal: false }));
+    setState((prev) => ({ ...prev, id: "" }));
   };
 
   const handleOpenDeleteModal = (
@@ -102,8 +111,8 @@ function Sidebar({ open, setSidebarOpened }: Props) {
     id: string
   ) => {
     e.stopPropagation();
-    setDeleteModal(true);
-    setId(id);
+    setState((prev) => ({ ...prev, deleteModal: true }));
+    setState((prev) => ({ ...prev, id: id }));
   };
 
   return (
@@ -161,13 +170,17 @@ function Sidebar({ open, setSidebarOpened }: Props) {
           <ChatsWrapper>
             {chats.map((chat) => (
               <Chat
-                onMouseEnter={() => setHoveredChat(chat.id)}
-                onMouseLeave={() => setHoveredChat(null)}
+                onMouseEnter={() =>
+                  setState((prev) => ({ ...prev, hoveredChat: chat.id }))
+                }
+                onMouseLeave={() =>
+                  setState((prev) => ({ ...prev, hoveredChat: null }))
+                }
                 onClick={() => navigate(chat.id)}
                 key={chat.id}
               >
                 <Label color="#a9a9a9">{truncateText(chat.chats[0].msg)}</Label>
-                {hoveredChat === chat.id && (
+                {state.hoveredChat === chat.id && (
                   <FontAwesomeIcon
                     onClick={(e) => handleOpenDeleteModal(e, chat.id)}
                     icon={faTrash}
@@ -192,7 +205,7 @@ function Sidebar({ open, setSidebarOpened }: Props) {
         </BottomSection>
       </StyledSidebar>
 
-      {deleteModal && (
+      {state.deleteModal && (
         <Modal
           width="40vw"
           title="Delete Chat"

@@ -19,12 +19,23 @@ import { addNotification } from "../../store/actions";
 
 type FormValues = z.infer<typeof formSchema>;
 
+type State = {
+  countryCodes: CountryCodeType[];
+  searchValue: string;
+  otpSent: boolean;
+  otp: string;
+  otpError: string;
+};
+
 function Home() {
-  const [countryCodes, setCountryCodes] = useState<CountryCodeType[]>([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [otpError, setOtpError] = useState("");
+  const [state, setState] = useState<State>({
+    countryCodes: [],
+    searchValue: "",
+    otpSent: false,
+    otp: "",
+    otpError: "",
+  });
+
   const mode = useSelector((state: RootState) => state.mode);
 
   const navigate = useNavigate();
@@ -64,7 +75,7 @@ function Home() {
           }));
         })
         .flat();
-      setCountryCodes(phoneCodes);
+      setState((prev) => ({ ...prev, countryCodes: phoneCodes }));
     } catch {
       const notification = {
         type: "error",
@@ -81,8 +92,8 @@ function Home() {
   }, [getCountryCodes]);
 
   const handleOtpSubmit = () => {
-    if (otp === "111111") {
-      setOtpError("");
+    if (state.otp === "111111") {
+      setState((prev) => ({ ...prev, otpError: "" }));
       const userData = {
         mobileNumber: getValues("mobileNumber"),
         country: getValues("country"),
@@ -97,12 +108,15 @@ function Home() {
       localStorage.setItem("userData", JSON.stringify(userData));
       navigate("/app");
     } else {
-      setOtpError("Invalid OTP. Please try again.");
+      setState((prev) => ({
+        ...prev,
+        otpError: "Invalid OTP. Please try again.",
+      }));
     }
   };
 
   const onSubmit = (data: FormValues) => {
-    setOtpSent(true);
+    setState((prev) => ({ ...prev, otpSent: true }));
     const notification = {
       type: "success",
       title: "OTP Sent",
@@ -116,7 +130,7 @@ function Home() {
     const handleEnter = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (otpSent) {
+        if (state.otpSent) {
           handleOtpSubmit();
         } else {
           handleSubmit(onSubmit)();
@@ -125,15 +139,15 @@ function Home() {
     };
     window.addEventListener("keydown", handleEnter);
     return () => window.removeEventListener("keydown", handleEnter);
-  }, [otpSent, handleSubmit, onSubmit, handleOtpSubmit]);
+  }, [state.otpSent, handleSubmit, onSubmit, handleOtpSubmit]);
 
   return (
     <HomeContainer>
       <FormCardWrapper
-        onSubmit={otpSent ? handleOtpSubmit : handleSubmit(onSubmit)}
+        onSubmit={state.otpSent ? handleOtpSubmit : handleSubmit(onSubmit)}
       >
         <FormCard mode={mode}>
-          {!otpSent && (
+          {!state.otpSent && (
             <>
               <SectionTitle>
                 <Label size="1.2rem" weight={600}>
@@ -149,16 +163,18 @@ function Home() {
                 render={({ field }) => (
                   <CountryCode
                     value={{
-                      value: searchValue,
+                      value: state.searchValue,
                       selected: field.value,
                       error: errors.country?.callingCode?.message || "",
                     }}
-                    onChange={(val) => setSearchValue(val)}
+                    onChange={(val) =>
+                      setState((prev) => ({ ...prev, searchValue: val }))
+                    }
                     onSelect={(selected) => {
                       setValue("country", selected);
-                      setSearchValue("");
+                      setState((prev) => ({ ...prev, searchValue: "" }));
                     }}
-                    options={countryCodes}
+                    options={state.countryCodes}
                   />
                 )}
               />
@@ -180,7 +196,7 @@ function Home() {
             </>
           )}
 
-          {otpSent && (
+          {state.otpSent && (
             <>
               <SectionTitle>
                 <Label size="1.2rem" weight={600}>
@@ -191,12 +207,12 @@ function Home() {
                 </Label>
               </SectionTitle>
               <OtpInput
-                value={otp}
-                active={otpSent}
-                error={otpError}
+                value={state.otp}
+                active={state.otpSent}
+                error={state.otpError}
                 onChange={(value: string) => {
-                  setOtp(value);
-                  setOtpError("");
+                  setState((prev) => ({ ...prev, otp: value }));
+                  setState((prev) => ({ ...prev, otpError: "" }));
                 }}
               />
             </>
@@ -210,7 +226,7 @@ function Home() {
               fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
             }}
           >
-            {otpSent ? "Verify OTP" : "Get OTP"}
+            {state.otpSent ? "Verify OTP" : "Get OTP"}
           </Button>
         </FormCard>
       </FormCardWrapper>

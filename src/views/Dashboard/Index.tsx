@@ -12,14 +12,25 @@ import { generateRandomId } from "../../utils";
 import { addMessageToChat, createChat, getChatById } from "../../utils/storage";
 import { PulseLoader } from "react-spinners";
 
+type State = {
+  message: string;
+  typing: boolean;
+  atBottom: boolean;
+  hoveredMsg: string | null;
+  canScroll: boolean;
+  loading: boolean;
+};
+
 function Dashboard() {
-  const [message, setMessage] = useState<string>("");
-  const [typing, setTyping] = useState<boolean>(false);
-  const [atBottom, setAtBottom] = useState<boolean>(true);
-  const [hoveredMsg, setHoveredMsg] = useState<string | null>(null);
+  const [state, setState] = useState<State>({
+    message: "",
+    typing: false,
+    atBottom: true,
+    hoveredMsg: null,
+    canScroll: false,
+    loading: true,
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [canScroll, setCanScroll] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const chatRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -29,29 +40,29 @@ function Dashboard() {
   const chat = id ? getChatById(id) : null;
 
   const simulateAiResponse = (chatId: string) => {
-    setTyping(true);
+    setState((prev) => ({ ...prev, typing: true }));
     const delay = Math.floor(Math.random() * 3000) + 3000;
     setTimeout(() => {
       addMessageToChat(chatId, "ai", "This is a simulated AI reply.");
-      setTyping(false);
+      setState((prev) => ({ ...prev, typing: false }));
       scrollToBottom();
     }, delay);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && message.trim()) {
+    if (event.key === "Enter" && state.message.trim()) {
       event.preventDefault();
       if (isNewChat) {
         const newId = generateRandomId();
         createChat(newId);
-        addMessageToChat(newId, "user", message.trim());
-        setMessage("");
+        addMessageToChat(newId, "user", state.message.trim());
+        setState((prev) => ({ ...prev, message: "" }));
         navigate(`${newId}`);
         simulateAiResponse(newId);
         scrollToBottom();
       } else if (id) {
-        addMessageToChat(id, "user", message.trim());
-        setMessage("");
+        addMessageToChat(id, "user", state.message.trim());
+        setState((prev) => ({ ...prev, message: "" }));
         simulateAiResponse(id);
         scrollToBottom();
       }
@@ -81,7 +92,7 @@ function Dashboard() {
     if (!chatRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = chatRef.current;
     const atBottomNow = scrollHeight - scrollTop - clientHeight < 50;
-    setAtBottom(atBottomNow);
+    setState((prev) => ({ ...prev, atBottom: atBottomNow }));
   };
 
   useEffect(() => {
@@ -129,15 +140,15 @@ function Dashboard() {
     if (!chatRef.current) return;
 
     const { scrollHeight, clientHeight } = chatRef.current;
-    setCanScroll(scrollHeight > clientHeight);
-  }, [chat?.chats.length, typing]);
+    setState((prev) => ({ ...prev, canScroll: scrollHeight > clientHeight }));
+  }, [chat?.chats.length, state.typing]);
 
   useEffect(() => {
     if (id) {
-      setLoading(true);
+      setState((prev) => ({ ...prev, loading: true }));
       const delay = Math.floor(Math.random() * 2000) + 1000;
       setTimeout(() => {
-        setLoading(false);
+        setState((prev) => ({ ...prev, loading: false }));
         scrollToBottom();
       }, delay);
     }
@@ -153,7 +164,7 @@ function Dashboard() {
         </EmptyChat>
       ) : (
         <ChatContainer ref={chatRef} onScroll={handleScroll}>
-          {loading && !chat
+          {state.loading && !chat
             ? Array.from({ length: 12 }).map((_, i) => (
                 <SkeletonBubble
                   key={i}
@@ -169,15 +180,22 @@ function Dashboard() {
                     <MessageRow
                       key={msg.timestamp}
                       $align={align}
-                      onMouseEnter={() => setHoveredMsg(msg.timestamp)}
-                      onMouseLeave={() => setHoveredMsg(null)}
+                      onMouseEnter={() =>
+                        setState((prev) => ({
+                          ...prev,
+                          hoveredMsg: msg.timestamp,
+                        }))
+                      }
+                      onMouseLeave={() =>
+                        setState((prev) => ({ ...prev, hoveredMsg: null }))
+                      }
                     >
                       {!isUser && (
                         <>
                           <MessageBubble $align={align}>
                             <Label color="white">{msg.msg}</Label>
                           </MessageBubble>
-                          {hoveredMsg === msg.timestamp && (
+                          {state.hoveredMsg === msg.timestamp && (
                             <CopyIcon onClick={() => copyToClipboard(msg.msg)}>
                               📋
                             </CopyIcon>
@@ -186,7 +204,7 @@ function Dashboard() {
                       )}
                       {isUser && (
                         <>
-                          {hoveredMsg === msg.timestamp && (
+                          {state.hoveredMsg === msg.timestamp && (
                             <CopyIcon onClick={() => copyToClipboard(msg.msg)}>
                               📋
                             </CopyIcon>
@@ -218,7 +236,7 @@ function Dashboard() {
                 );
               })}
 
-          {typing && (
+          {state.typing && (
             <MessageBubble $align="flex-start">
               <Label color="white">Gemini is typing</Label>{" "}
               <PulseLoader color="white" size={3} />
@@ -227,10 +245,10 @@ function Dashboard() {
         </ChatContainer>
       )}
 
-      {!isNewChat && canScroll && (
-        <ScrollToggle onClick={atBottom ? scrollToTop : scrollToBottom}>
+      {!isNewChat && state.canScroll && (
+        <ScrollToggle onClick={state.atBottom ? scrollToTop : scrollToBottom}>
           <FontAwesomeIcon
-            icon={atBottom ? faArrowUp : faArrowDown}
+            icon={state.atBottom ? faArrowUp : faArrowDown}
             color="#388bff"
             size="lg"
           />
@@ -241,8 +259,10 @@ function Dashboard() {
         <InputWrapper>
           <Textarea
             onKeyDown={handleKeyDown}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={state.message}
+            onChange={(e) =>
+              setState((prev) => ({ ...prev, message: e.target.value }))
+            }
             placeholder="Ask something..."
           />
           <IconWrapper>
