@@ -1,38 +1,40 @@
-import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import styled from "styled-components";
-import Header from "./components/Header";
+import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
 
 function Layout() {
+  const [sidebarOpened, setSidebarOpened] = useState(false);
+
   return (
-    <Container>
-      <Sidebar />
-      <Content>
-        <Header />
-        <OutletWrapper>
+    <LayoutWrapper>
+      <Sidebar open={sidebarOpened} setSidebarOpened={setSidebarOpened} />
+      <MainContent>
+        <Header onOpenSidebar={() => setSidebarOpened(true)} />
+        <ContentBody>
           <Outlet />
-        </OutletWrapper>
-      </Content>
-    </Container>
+        </ContentBody>
+      </MainContent>
+    </LayoutWrapper>
   );
 }
 
-const OutletWrapper = styled.div`
-  width: 100%;
-  height: 92%;
-`;
-
-const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
+const LayoutWrapper = styled.div`
   display: flex;
+  height: 100vh;
+  width: 100%;
 `;
 
-const Content = styled.div`
+const MainContent = styled.div`
   flex: 1;
-  height: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+const ContentBody = styled.div`
+  flex: 1;
+  overflow-y: auto;
 `;
 
 export default Layout;

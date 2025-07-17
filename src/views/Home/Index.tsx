@@ -113,111 +113,110 @@ function Home() {
   };
 
   useEffect(() => {
-  const handleEnter = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (otpSent) {
-        handleOtpSubmit();
-      } else {
-        handleSubmit(onSubmit)();
+    const handleEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (otpSent) {
+          handleOtpSubmit();
+        } else {
+          handleSubmit(onSubmit)();
+        }
       }
-    }
-  };
-  window.addEventListener("keydown", handleEnter);
-  return () => window.removeEventListener("keydown", handleEnter);
-}, [otpSent, handleSubmit, onSubmit, handleOtpSubmit]);
+    };
+    window.addEventListener("keydown", handleEnter);
+    return () => window.removeEventListener("keydown", handleEnter);
+  }, [otpSent, handleSubmit, onSubmit, handleOtpSubmit]);
 
   return (
     <HomeContainer>
-      <FormCardWrapper onSubmit={otpSent ? handleOtpSubmit : handleSubmit(onSubmit)}>
-      <FormCard
-        mode={mode}
+      <FormCardWrapper
+        onSubmit={otpSent ? handleOtpSubmit : handleSubmit(onSubmit)}
       >
-        {!otpSent && (
-          <>
-            <SectionTitle>
-              <Label size="1.2rem" weight={600}>
-                Welcome Back
-              </Label>
-              <Label size="0.8rem" color="#a9a9a9">
-                Verify your number to get started.
-              </Label>
-            </SectionTitle>
-            <Controller
-              control={control}
-              name="country"
-              render={({ field }) => (
-                <CountryCode
-                  value={{
-                    value: searchValue,
-                    selected: field.value,
-                    error: errors.country?.callingCode?.message || "",
-                  }}
-                  onChange={(val) => setSearchValue(val)}
-                  onSelect={(selected) => {
-                    setValue("country", selected);
-                    setSearchValue("");
-                  }}
-                  options={countryCodes}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="mobileNumber"
-              render={({ field }) => (
-                <InputField
-                  value={field.value}
-                  error={errors.mobileNumber?.message || ""}
-                  field="mobileNumber"
-                  type="number"
-                  name="Mobile Number"
-                  logo={faPhone}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          </>
-        )}
+        <FormCard mode={mode}>
+          {!otpSent && (
+            <>
+              <SectionTitle>
+                <Label size="1.2rem" weight={600}>
+                  Welcome Back
+                </Label>
+                <Label size="0.8rem" color="#a9a9a9">
+                  Verify your number to get started.
+                </Label>
+              </SectionTitle>
+              <Controller
+                control={control}
+                name="country"
+                render={({ field }) => (
+                  <CountryCode
+                    value={{
+                      value: searchValue,
+                      selected: field.value,
+                      error: errors.country?.callingCode?.message || "",
+                    }}
+                    onChange={(val) => setSearchValue(val)}
+                    onSelect={(selected) => {
+                      setValue("country", selected);
+                      setSearchValue("");
+                    }}
+                    options={countryCodes}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="mobileNumber"
+                render={({ field }) => (
+                  <InputField
+                    value={field.value}
+                    error={errors.mobileNumber?.message || ""}
+                    field="mobileNumber"
+                    type="number"
+                    name="Mobile Number"
+                    logo={faPhone}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </>
+          )}
 
-        {otpSent && (
-          <>
-            <SectionTitle>
-              <Label size="1.2rem" weight={600}>
-                Verify OTP
-              </Label>
-              <Label size="0.8rem" color="#a9a9a9">
-                Please check your phone and enter the OTP.
-              </Label>
-            </SectionTitle>
-            <OtpInput
-              value={otp}
-              active={otpSent}
-              error={otpError}
-              onChange={(value: string) => {
-                setOtp(value);
-                setOtpError("");
-              }}
-            />
-            
-          </>
-        )}
+          {otpSent && (
+            <>
+              <SectionTitle>
+                <Label size="1.2rem" weight={600}>
+                  Verify OTP
+                </Label>
+                <Label size="0.8rem" color="#a9a9a9">
+                  Please check your phone and enter the OTP.
+                </Label>
+              </SectionTitle>
+              <OtpInput
+                value={otp}
+                active={otpSent}
+                error={otpError}
+                onChange={(value: string) => {
+                  setOtp(value);
+                  setOtpError("");
+                }}
+              />
+            </>
+          )}
 
-        <Button
-          type="submit"
-          sx={{
-            width: "100%",
-            maxWidth: "300px",
-            fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
-          }}
-        >
-          {otpSent ? "Verify OTP" : "Get OTP"}
-        </Button>
-      </FormCard>
+          <Button
+            type="submit"
+            sx={{
+              width: "100%",
+              maxWidth: "300px",
+              fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
+            }}
+          >
+            {otpSent ? "Verify OTP" : "Get OTP"}
+          </Button>
+        </FormCard>
       </FormCardWrapper>
     </HomeContainer>
   );
-};
+}
 
 const FormCardWrapper = styled.form`
   width: 100%;

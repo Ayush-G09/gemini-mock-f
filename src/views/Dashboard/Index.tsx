@@ -21,7 +21,6 @@ function Dashboard() {
   const [canScroll, setCanScroll] = useState(false);
   const [loading, setLoading] = useState(true);
 
-
   const chatRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -134,16 +133,15 @@ function Dashboard() {
   }, [chat?.chats.length, typing]);
 
   useEffect(() => {
-  if (id) {
-    setLoading(true);
-    const delay = Math.floor(Math.random() * 2000) + 1000;
-    setTimeout(() => {
-      setLoading(false);
-      scrollToBottom();
-    }, delay);
-  }
-}, [id]);
-
+    if (id) {
+      setLoading(true);
+      const delay = Math.floor(Math.random() * 2000) + 1000;
+      setTimeout(() => {
+        setLoading(false);
+        scrollToBottom();
+      }, delay);
+    }
+  }, [id]);
 
   return (
     <Wrapper>
@@ -155,61 +153,70 @@ function Dashboard() {
         </EmptyChat>
       ) : (
         <ChatContainer ref={chatRef} onScroll={handleScroll}>
-          {loading && !chat ? (
-  Array.from({ length: 12 }).map((_, i) => (
-    <SkeletonBubble key={i} $align={i%2 === 0 ? "flex-start" : "flex-end"} />
-  ))
-) : chat?.chats.map((msg) => {
-            const isUser = msg.from === "user";
-            const align = isUser ? "flex-end" : "flex-start";
+          {loading && !chat
+            ? Array.from({ length: 12 }).map((_, i) => (
+                <SkeletonBubble
+                  key={i}
+                  $align={i % 2 === 0 ? "flex-start" : "flex-end"}
+                />
+              ))
+            : chat?.chats.map((msg) => {
+                const isUser = msg.from === "user";
+                const align = isUser ? "flex-end" : "flex-start";
 
-            return (
-              <>
-              <MessageRow
-                key={msg.timestamp}
-                $align={align}
-                onMouseEnter={() => setHoveredMsg(msg.timestamp)}
-                onMouseLeave={() => setHoveredMsg(null)}
-              >
-                {!isUser && (
+                return (
                   <>
-                    <MessageBubble $align={align}>
-                      <Label color="white">{msg.msg}</Label>
-                    </MessageBubble>
-                    {hoveredMsg === msg.timestamp && (
-                      <CopyIcon onClick={() => copyToClipboard(msg.msg)}>
-                        📋
-                      </CopyIcon>
-                    )}
-                  </>
-                )}
-                {isUser && (
-                  <>
-                    {hoveredMsg === msg.timestamp && (
-                      <CopyIcon onClick={() => copyToClipboard(msg.msg)}>
-                        📋
-                      </CopyIcon>
-                    )}
-                    <MessageBubble $align={align}>
-                      {msg.msg.startsWith("data:image") ? (
-                        <img
-                          src={msg.msg}
-                          alt="uploaded"
-                          style={{ maxWidth: "150px", borderRadius: "8px" }}
-                        />
-                      ) : (
-                        <Label color="white">{msg.msg}</Label>
+                    <MessageRow
+                      key={msg.timestamp}
+                      $align={align}
+                      onMouseEnter={() => setHoveredMsg(msg.timestamp)}
+                      onMouseLeave={() => setHoveredMsg(null)}
+                    >
+                      {!isUser && (
+                        <>
+                          <MessageBubble $align={align}>
+                            <Label color="white">{msg.msg}</Label>
+                          </MessageBubble>
+                          {hoveredMsg === msg.timestamp && (
+                            <CopyIcon onClick={() => copyToClipboard(msg.msg)}>
+                              📋
+                            </CopyIcon>
+                          )}
+                        </>
                       )}
-                    </MessageBubble>
+                      {isUser && (
+                        <>
+                          {hoveredMsg === msg.timestamp && (
+                            <CopyIcon onClick={() => copyToClipboard(msg.msg)}>
+                              📋
+                            </CopyIcon>
+                          )}
+                          <MessageBubble $align={align}>
+                            {msg.msg.startsWith("data:image") ? (
+                              <img
+                                src={msg.msg}
+                                alt="uploaded"
+                                style={{
+                                  maxWidth: "150px",
+                                  borderRadius: "8px",
+                                }}
+                              />
+                            ) : (
+                              <Label color="white">{msg.msg}</Label>
+                            )}
+                          </MessageBubble>
+                        </>
+                      )}
+                    </MessageRow>
+                    <Timestamp $align={align}>
+                      {new Date(msg.timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </Timestamp>
                   </>
-                )}
-              </MessageRow>
-              <Timestamp $align={align}>
-      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-    </Timestamp>
-              </>
-            );
-          })}
+                );
+              })}
 
           {typing && (
             <MessageBubble $align="flex-start">
@@ -220,7 +227,6 @@ function Dashboard() {
         </ChatContainer>
       )}
 
-      {/* Scroll Icon Toggle */}
       {!isNewChat && canScroll && (
         <ScrollToggle onClick={atBottom ? scrollToTop : scrollToBottom}>
           <FontAwesomeIcon
@@ -403,7 +409,11 @@ const SkeletonBubble = styled.div<{ $align: string }>`
   align-self: ${(props) => props.$align};
 
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
 `;

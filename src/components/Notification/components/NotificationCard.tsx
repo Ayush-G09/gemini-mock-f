@@ -18,7 +18,7 @@ type State = {
   remainingSeconds: number;
 };
 
-function NotificationCard({ title, msg, time, type}: NotificationType) {
+function NotificationCard({ title, msg, time, type }: NotificationType) {
   const [state, setState] = useState<State>({
     collapse: false,
     remainingSeconds: 10,
@@ -61,8 +61,13 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
   return (
     <Card>
       <Header>
-        <FontAwesomeIcon icon={type === 'success' ? faCircleCheck : faCircleXmark} color={type === "success" ? "#38BB73" : "red"} />
-        <Label weight={600} color="#a9a9a9" >{title}</Label>
+        <FontAwesomeIcon
+          icon={type === "success" ? faCircleCheck : faCircleXmark}
+          color={type === "success" ? "#38BB73" : "red"}
+        />
+        <Label weight={600} color="#a9a9a9">
+          {title}
+        </Label>
         <FontAwesomeIcon
           onClick={handleToggleCollapse}
           icon={state.collapse ? faChevronUp : faChevronDown}
@@ -155,10 +160,10 @@ const Footer = styled.div`
   padding-top: 5px;
 `;
 
-const Loader = styled.div<{ $percent: number, type: 'success' | 'error'}>`
+const Loader = styled.div<{ $percent: number; type: "success" | "error" }>`
   width: ${(p) => `${p.$percent}%`};
   height: 5px;
-  background-color: ${(p) => p.type === "success" ? "#38BB73" : "red"};
+  background-color: ${(p) => (p.type === "success" ? "#38BB73" : "red")};
   margin-top: 5px;
   transition: width 1s linear;
 `;

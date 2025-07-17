@@ -67,9 +67,9 @@ const OtpInput: React.FC<OtpInputProps> = ({
 };
 
 const StyledOtp = styled.div`
-display: flex;
-flex-direction: column;
-width: 80%;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
 `;
 
 const Wrapper = styled.div`
