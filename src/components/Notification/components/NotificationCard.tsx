@@ -62,7 +62,7 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
     <Card>
       <Header>
         <FontAwesomeIcon icon={type === 'success' ? faCircleCheck : faCircleXmark} color={type === "success" ? "#38BB73" : "red"} />
-        <Label weight={600}color="black" >{title}</Label>
+        <Label weight={600} color="#a9a9a9" >{title}</Label>
         <FontAwesomeIcon
           onClick={handleToggleCollapse}
           icon={state.collapse ? faChevronUp : faChevronDown}
@@ -106,17 +106,16 @@ const Card = styled.div`
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
+  background-color: ${(p) => p.theme.bg.base300};
   pointer-events: auto;
   transition: max-height 0.5s ease-in-out;
+  z-index: 15;
 
   min-height: 76px;
 
-  /* Start off-screen to the right */
   transform: translateX(100%);
   opacity: 0;
 
-  /* Animate into view */
   animation: slideIn 0.4s ease-out forwards;
 
   @keyframes slideIn {
@@ -151,7 +150,7 @@ const Footer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #f1f2f4;
+  background-color: ${(p) => p.theme.bg.base200};
   box-sizing: border-box;
   padding-top: 5px;
 `;

@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { addNotification, setMode } from "../../../store/actions";
 import { NotificationType, RootState } from "../../../types/redux";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Label from "../../../components/Label";
 import { truncateText } from "../../../utils";
 import { useNavigate } from "react-router-dom";
@@ -92,7 +92,8 @@ function Sidebar() {
     setId("");
   };
 
-  const handleOpenDeleteModal = (id: string) => {
+  const handleOpenDeleteModal = (e: React.MouseEvent<SVGSVGElement, MouseEvent>, id: string) => {
+    e.stopPropagation();
     setDeleteModal(true);
     setId(id);
   };
@@ -159,7 +160,7 @@ function Sidebar() {
                   </Label>
                   {hoveredChat === chat.id && (
                     <FontAwesomeIcon
-                      onClick={() => handleOpenDeleteModal(chat.id)}
+                      onClick={(e) => handleOpenDeleteModal(e, chat.id)}
                       icon={faTrash}
                       color="#a9a9a9"
                       style={{ marginLeft: "auto" }}
