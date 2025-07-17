@@ -4,6 +4,7 @@ import styled, { ThemeProvider } from "styled-components";
 import { router } from "./routes";
 import { generateTheme } from "./theme";
 import { RootState } from "./types/redux";
+import Notification from "./components/Notification/Index";
 
 function App() {
   const mode = useSelector((state: RootState) => state.mode);
@@ -11,6 +12,7 @@ function App() {
   return (
     <ThemeProvider theme={currentTheme}>
       <Root>
+        <Notification />
         <RouterProvider router={router} />
       </Root>
     </ThemeProvider>

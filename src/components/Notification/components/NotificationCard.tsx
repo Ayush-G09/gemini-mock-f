@@ -27,7 +27,6 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useDispatch();
 
-  // Start countdown on mount
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       const now = new Date();
@@ -50,7 +49,6 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
     };
   }, [time, dispatch]);
 
-  // Manual close
   const handleClose = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     dispatch(deleteNotification(time));
@@ -64,7 +62,7 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
     <Card>
       <Header>
         <FontAwesomeIcon icon={type === 'success' ? faCircleCheck : faCircleXmark} color={type === "success" ? "#38BB73" : "red"} />
-        <Label weight={600}>{title}</Label>
+        <Label weight={600}color="black" >{title}</Label>
         <FontAwesomeIcon
           onClick={handleToggleCollapse}
           icon={state.collapse ? faChevronUp : faChevronDown}
@@ -83,7 +81,7 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
         />
       </Header>
 
-      <Message collapse={state.collapse}>
+      <Message $collapse={state.collapse}>
         <Label color="#a9a9a9" size="0.9rem">
           {msg}
         </Label>
@@ -95,7 +93,7 @@ function NotificationCard({ title, msg, time, type}: NotificationType) {
           <span style={{ fontWeight: 600 }}>{state.remainingSeconds}</span>{" "}
           seconds.
         </Label>
-        <Loader type={type} percent={(state.remainingSeconds / 10) * 100} />
+        <Loader type={type} $percent={(state.remainingSeconds / 10) * 100} />
       </Footer>
     </Card>
   );
@@ -138,13 +136,13 @@ const Header = styled.div`
   gap: 10px;
 `;
 
-const Message = styled.div<{ collapse: boolean }>`
+const Message = styled.div<{ $collapse: boolean }>`
   width: 100%;
   box-sizing: border-box;
   padding: 0 40px;
-  height: ${(p) => (p.collapse ? "50px" : "0")};
-  opacity: ${(p) => (p.collapse ? 1 : 0)};
-  padding-bottom: ${(p) => (p.collapse ? "10px" : "0")};
+  height: ${(p) => (p.$collapse ? "50px" : "0")};
+  opacity: ${(p) => (p.$collapse ? 1 : 0)};
+  padding-bottom: ${(p) => (p.$collapse ? "10px" : "0")};
   max-height: 500px;
   transition: all 0.5s ease-in-out;
 `;
@@ -158,8 +156,8 @@ const Footer = styled.div`
   padding-top: 5px;
 `;
 
-const Loader = styled.div<{ percent: number, type: 'success' | 'error'}>`
-  width: ${(p) => `${p.percent}%`};
+const Loader = styled.div<{ $percent: number, type: 'success' | 'error'}>`
+  width: ${(p) => `${p.$percent}%`};
   height: 5px;
   background-color: ${(p) => p.type === "success" ? "#38BB73" : "red"};
   margin-top: 5px;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InputField from "../../components/InputField";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
@@ -12,9 +12,10 @@ import { formSchema } from "../../schema/formSchema";
 import { z } from "zod";
 import OtpInput from "../../components/OtpInput";
 import Label from "../../components/Label";
-import { useSelector } from "react-redux";
-import { modeType, RootState } from "../../types/redux";
+import { useDispatch, useSelector } from "react-redux";
+import { modeType, NotificationType, RootState } from "../../types/redux";
 import { useNavigate } from "react-router-dom";
+import { addNotification } from "../../store/actions";
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -27,6 +28,7 @@ function Home() {
   const mode = useSelector((state: RootState) => state.mode);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     control,
@@ -46,41 +48,52 @@ function Home() {
     },
   });
 
-  const getCountryCodes = async () => {
-    try {
-      const res = await axiosInstance.get(
-        "https://restcountries.com/v3.1/all?fields=name,idd,flags"
-      );
-      const phoneCodes = res.data
-        .map((country: any) => {
-          const root = country.idd?.root || "";
-          const suffixes = country.idd?.suffixes || [""];
-          return suffixes.map((suffix: string) => ({
-            name: country.name.common,
-            callingCode: `${root}${suffix}`,
-            flag: country.flags.png,
-          }));
-        })
-        .flat();
-      setCountryCodes(phoneCodes);
-    } catch {
-      console.log("error fetching country codes");
-    }
-  };
+  const getCountryCodes = useCallback(async () => {
+  try {
+    const res = await axiosInstance.get(
+      "https://restcountries.com/v3.1/all?fields=name,idd,flags"
+    );
+    const phoneCodes = res.data
+      .map((country: any) => {
+        const root = country.idd?.root || "";
+        const suffixes = country.idd?.suffixes || [""];
+        return suffixes.map((suffix: string) => ({
+          name: country.name.common,
+          callingCode: `${root}${suffix}`,
+          flag: country.flags.png,
+        }));
+      })
+      .flat();
+    setCountryCodes(phoneCodes);
+  } catch {
+    const notification = {
+      type: "error",
+      title: "Error: Country codes",
+      msg: "Error fetching country codes, try again",
+      time: new Date(),
+    } as NotificationType;
+    dispatch(addNotification(notification));
+  }
+}, [dispatch]);
 
   useEffect(() => {
     getCountryCodes();
-  }, []);
+  }, [getCountryCodes]);
 
   const handleOtpSubmit = () => {
     if (otp === "111111") {
-      console.log("OTP Verified:", otp);
       setOtpError("");
       const userData = {
         mobileNumber: getValues("mobileNumber"),
         country: getValues("country"),
       };
-
+      const notification = {
+        type: "success",
+        title: "OTP Verified",
+        msg: "OTP verified successfully, Welcome.",
+        time: new Date(),
+      } as NotificationType;
+      dispatch(addNotification(notification));
       localStorage.setItem("userData", JSON.stringify(userData));
       navigate("/app");
     } else {
@@ -89,15 +102,14 @@ function Home() {
   };
 
   const onSubmit = (data: FormValues) => {
-    console.log("Form Data (Phone Info):", data);
     setOtpSent(true);
-    // Simulate sending OTP...
-    setTimeout(() => {
-      console.log(
-        "OTP sent to",
-        `${data.country.callingCode} ${data.mobileNumber}`
-      );
-    }, 500);
+    const notification = {
+      type: "success",
+      title: "OTP Sent",
+      msg: "OTP send to your mobile number.",
+      time: new Date(),
+    } as NotificationType;
+    dispatch(addNotification(notification));
   };
 
   return (

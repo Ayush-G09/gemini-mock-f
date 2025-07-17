@@ -75,7 +75,17 @@ function InputField({
         <FontAwesomeIcon color="#a9a9a9" icon={logo} />
         <InputWrapper>
           <Label
-            color={value ? mode === "light" ? "black" : "white" : state.showInput ? mode === "light" ? "black" : "white" : "#d3d3d3"}
+            color={
+              value
+                ? mode === "light"
+                  ? "black"
+                  : "white"
+                : state.showInput
+                ? mode === "light"
+                  ? "black"
+                  : "white"
+                : "#d3d3d3"
+            }
             size={value ? "0.8rem" : state.showInput ? "0.8rem" : "1rem"}
           >
             {name}

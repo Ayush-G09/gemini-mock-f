@@ -6,16 +6,21 @@ import Sidebar from "./components/Sidebar";
 function Layout() {
   return (
     <Container>
-      <Sidebar/>
+      <Sidebar />
       <Content>
-        <Header/>
-        <div style={{width: '100%', height: '92%'}}>
+        <Header />
+        <OutletWrapper>
           <Outlet />
-        </div>
+        </OutletWrapper>
       </Content>
     </Container>
   );
 }
+
+const OutletWrapper = styled.div`
+width: 100%;
+height: 92%;
+`;
 
 const Container = styled.div`
   width: 100vw;

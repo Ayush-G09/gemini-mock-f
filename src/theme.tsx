@@ -14,5 +14,11 @@ export const generateTheme = (mode: modeType): DefaultTheme => ({
     blue300: "#0C66E4",
     gary100: "#d3d3d3",
     gray200: "#a9a9a9",
+    red100: "#F87168",
+    red200: "#F15B50",
+    red300: "#E2483D",
+    green100: "#94C748",
+    green200: "#82B536",
+    green300: "#6A9A23",
   },
 });

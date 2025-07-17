@@ -14,6 +14,7 @@ type Props = {
   disabled?: boolean;
   variant?: "primary" | "secondary" | "tertiary";
   type?: "button" | "submit" | "reset" | undefined;
+  intent?: "success" | "error" | "neutral";
 };
 
 function Button({
@@ -26,9 +27,11 @@ function Button({
   disabled = false,
   variant = "primary",
   type = undefined,
+  intent = "neutral",
 }: Props) {
   return (
     <StyledButton
+      $intent={intent}
       type={type}
       $variant={variant}
       disabled={loading || disabled}
@@ -44,20 +47,40 @@ function Button({
 
 const StyledButton = styled.button<{
   $variant: "primary" | "secondary" | "tertiary";
+  $intent: "success" | "error" | "neutral";
   disabled: boolean;
 }>`
   padding: 8px 16px;
   border-radius: 4px;
   max-height: 40px;
   border: ${(p) =>
-    p.$variant === "secondary" ? `1px solid ${p.theme.color.blue200}` : "none"};
+    p.$variant === "secondary"
+      ? `1px solid ${
+          p.$intent === "error"
+            ? p.theme.color.red200
+            : p.$intent === "success"
+            ? p.theme.color.green200
+            : p.theme.color.blue200
+        }`
+      : "none"};
   background-color: ${(p) =>
     p.disabled
       ? p.theme.color.gary100
       : p.$variant === "primary"
-      ? p.theme.color.blue200
+      ? p.$intent === "error"
+        ? p.theme.color.red200
+        : p.$intent === "success"
+        ? p.theme.color.green200
+        : p.theme.color.blue200
       : "transparent"};
-  color: ${(p) => (p.$variant === "primary" ? "#fff" : p.theme.color.blue200)};
+  color: ${(p) =>
+    p.$variant === "primary"
+      ? "#fff"
+      : p.$intent === "error"
+      ? p.theme.color.red200
+      : p.$intent === "success"
+      ? p.theme.color.green200
+      : p.theme.color.blue200};
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -73,7 +96,11 @@ const StyledButton = styled.button<{
       p.disabled
         ? p.theme.color.gray200
         : p.$variant === "primary"
-        ? p.theme.color.blue300
+        ? p.$intent === "error"
+          ? p.theme.color.red200
+          : p.$intent === "success"
+          ? p.theme.color.green200
+          : p.theme.color.blue300
         : "none"};
   }
 `;

@@ -9,13 +9,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { setMode } from "../../../store/actions";
-import { RootState } from "../../../types/redux";
+import { addNotification, setMode } from "../../../store/actions";
+import { NotificationType, RootState } from "../../../types/redux";
 import { useRef, useState } from "react";
 import Label from "../../../components/Label";
 import { truncateText } from "../../../utils";
 import { useNavigate } from "react-router-dom";
 import { deleteChat, getChats } from "../../../utils/storage";
+import Modal from "../../../components/Modal";
+import Button from "../../../components/Button";
 
 function Sidebar() {
   const mode = useSelector((state: RootState) => state.mode);
@@ -24,6 +26,8 @@ function Sidebar() {
   const [sidebarOpened, setSidebarOpened] = useState<boolean>(false);
   const [openedByClick, setOpenedByClick] = useState(false);
   const [hoveredChat, setHoveredChat] = useState<string | null>(null);
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [id, setId] = useState<string>("");
 
   const toggleMode = () => {
     const newMode = mode === "dark" ? "light" : "dark";
@@ -44,7 +48,7 @@ function Sidebar() {
     if (currentWidth === "90px") {
       sidebarRef.current.style.width = "270px";
       setSidebarOpened(true);
-      setOpenedByClick(true); // ⬅️ track that it was opened via click
+      setOpenedByClick(true);
     } else {
       sidebarRef.current.style.width = "90px";
       setSidebarOpened(false);
@@ -68,94 +72,148 @@ function Sidebar() {
 
   const chats = getChats();
 
-  const handleDeleteChat = (id: string) => {
+  const handleDeleteChat = () => {
     deleteChat(id);
+    handleCloseDeleteModal();
+    const notification = {
+      type: "success",
+      title: "Chat deleted",
+      msg: `Chat deleted successfuly, and can't be undo`,
+      time: new Date(),
+    } as NotificationType;
+    dispatch(addNotification(notification));
     setTimeout(() => {
       navigate("/app");
     }, 50);
   };
 
+  const handleCloseDeleteModal = () => {
+    setDeleteModal(false);
+    setId("");
+  };
+
+  const handleOpenDeleteModal = (id: string) => {
+    setDeleteModal(true);
+    setId(id);
+  };
+
   return (
-    <StyledSidebar open={sidebarOpened} ref={sidebarRef}>
-      <TopSection>
-        <IconWrapper>
-          <FontAwesomeIcon
-            onClick={toggleWidth}
-            icon={faBars}
-            color="#a9a9a9"
-            style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
-          />
-          {sidebarOpened && (
+    <>
+      <StyledSidebar open={sidebarOpened} ref={sidebarRef}>
+        <TopSection>
+          <IconWrapper>
             <FontAwesomeIcon
-              icon={faMagnifyingGlass}
+              onClick={toggleWidth}
+              icon={faBars}
               color="#a9a9a9"
-              style={{
-                width: "1.2rem",
-                height: "1.2rem",
-                cursor: "pointer",
-                marginLeft: "auto",
-              }}
+              style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
             />
-          )}
-        </IconWrapper>
-        <IconWrapper>
-          <FontAwesomeIcon
-            onClick={navigateToApp}
-            icon={faPenToSquare}
-            color="#a9a9a9"
-            style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
-          />
-          {sidebarOpened && (
-            <Label
+            {sidebarOpened && (
+              <FontAwesomeIcon
+                icon={faMagnifyingGlass}
+                color="#a9a9a9"
+                style={{
+                  width: "1.2rem",
+                  height: "1.2rem",
+                  cursor: "pointer",
+                  marginLeft: "auto",
+                }}
+                onClick={() => navigate("search")}
+              />
+            )}
+          </IconWrapper>
+          <IconWrapper>
+            <FontAwesomeIcon
               onClick={navigateToApp}
+              icon={faPenToSquare}
               color="#a9a9a9"
-              sx={{ marginRight: "auto" }}
-            >
-              New Chat
-            </Label>
-          )}
-        </IconWrapper>
-      </TopSection>
-
-      <MiddleSection
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        {sidebarOpened && (
-          <ChatsWrapper>
-            {chats.map((chat) => (
-              <Chat
-                onMouseEnter={() => setHoveredChat(chat.id)}
-                onMouseLeave={() => setHoveredChat(null)}
-                onClick={() => navigate(chat.id)}
-                key={chat.id}
+              style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
+            />
+            {sidebarOpened && (
+              <Label
+                onClick={navigateToApp}
+                color="#a9a9a9"
+                sx={{ marginRight: "auto" }}
               >
-                <Label color="#a9a9a9">{truncateText(chat.chats[0].msg)}</Label>
-                {hoveredChat === chat.id && (
-                  <FontAwesomeIcon
-                    onClick={() => handleDeleteChat(chat.id)}
-                    icon={faTrash}
-                    color="#a9a9a9"
-                    style={{ marginLeft: "auto" }}
-                  />
-                )}
-              </Chat>
-            ))}
-          </ChatsWrapper>
-        )}
-      </MiddleSection>
+                New Chat
+              </Label>
+            )}
+          </IconWrapper>
+        </TopSection>
 
-      <BottomSection open={sidebarOpened}>
-        <ToggleSwitch>
-          <ToggleCircle onClick={toggleMode} mode={mode}>
-            <FontAwesomeIcon icon={faMoon} />
-          </ToggleCircle>
-          <ToggleCircle onClick={toggleMode} mode={mode} $isSun>
-            <FontAwesomeIcon icon={faSun} />
-          </ToggleCircle>
-        </ToggleSwitch>
-      </BottomSection>
-    </StyledSidebar>
+        <MiddleSection
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {sidebarOpened && (
+            <ChatsWrapper>
+              {chats.map((chat) => (
+                <Chat
+                  onMouseEnter={() => setHoveredChat(chat.id)}
+                  onMouseLeave={() => setHoveredChat(null)}
+                  onClick={() => navigate(chat.id)}
+                  key={chat.id}
+                >
+                  <Label color="#a9a9a9">
+                    {truncateText(chat.chats[0].msg)}
+                  </Label>
+                  {hoveredChat === chat.id && (
+                    <FontAwesomeIcon
+                      onClick={() => handleOpenDeleteModal(chat.id)}
+                      icon={faTrash}
+                      color="#a9a9a9"
+                      style={{ marginLeft: "auto" }}
+                    />
+                  )}
+                </Chat>
+              ))}
+            </ChatsWrapper>
+          )}
+        </MiddleSection>
+
+        <BottomSection open={sidebarOpened}>
+          <ToggleSwitch>
+            <ToggleCircle onClick={toggleMode} mode={mode}>
+              <FontAwesomeIcon icon={faMoon} />
+            </ToggleCircle>
+            <ToggleCircle onClick={toggleMode} mode={mode} $isSun>
+              <FontAwesomeIcon icon={faSun} />
+            </ToggleCircle>
+          </ToggleSwitch>
+        </BottomSection>
+      </StyledSidebar>
+      {deleteModal && (
+        <Modal
+          width="40vw"
+          title="Delete Chat"
+          onClose={handleCloseDeleteModal}
+        >
+          <ConfirmModalContent
+          >
+            <Label size="0.8" color="#a9a9a9">
+              Are you sure you want to delete this chat?
+            </Label>
+            <Label size="0.8" color="#a9a9a9">
+              This action cannot be undone, and all messages will be permanently
+              removed.
+            </Label>
+            <ModalActions
+            >
+              <Button intent="success" onClick={handleDeleteChat}>
+                Confirm
+              </Button>
+              <Button
+                intent="error"
+                variant="secondary"
+                onClick={handleCloseDeleteModal}
+              >
+                Cancel
+              </Button>
+            </ModalActions>
+          </ConfirmModalContent>
+        </Modal>
+      )}
+    </>
   );
 }
 
@@ -281,6 +339,20 @@ const Chat = styled.div`
   &:hover {
     background-color: ${(p) => p.theme.bg.base100};
   }
+`;
+
+const ConfirmModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 15px;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
 `;
 
 export default Sidebar;

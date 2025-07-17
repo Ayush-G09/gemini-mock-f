@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "./views/Home/Index";
 import Layout from "./views/Layout/Index";
 import Dashboard from "./views/Dashboard/Index";
+import Search from "./views/Search/Index";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
       {
         path: ":id",
         element: <Dashboard />,
+      },
+      {
+        path: "search",
+        element: <Search />,
       },
     ],
   },

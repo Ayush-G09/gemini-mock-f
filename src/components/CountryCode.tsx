@@ -200,7 +200,7 @@ const Option = styled.div`
   gap: 10px;
   border-bottom: 1px solid #388bff;
   cursor: pointer;
-  background-color: ${(p) => p.theme.bg.base100}
+  background-color: ${(p) => p.theme.bg.base100};
 `;
 
 export default CountryCode;

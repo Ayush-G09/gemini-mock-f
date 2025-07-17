@@ -14,6 +14,12 @@ declare module "styled-components" {
       blue300: string;
       gary100: string;
       gray200: string;
+      red100: string;
+      red200: string;
+      red300: string;
+      green100: string;
+      green200: string;
+      green300: string;
     };
   }
 }

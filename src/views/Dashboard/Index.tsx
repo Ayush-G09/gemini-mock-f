@@ -19,6 +19,8 @@ function Dashboard() {
   const [hoveredMsg, setHoveredMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [canScroll, setCanScroll] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   const chatRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -54,7 +56,7 @@ function Dashboard() {
         simulateAiResponse(id);
         scrollToBottom();
       }
-      setTimeout(scrollToBottom, 100); // After DOM updates
+      setTimeout(scrollToBottom, 100);
     }
   };
 
@@ -83,7 +85,6 @@ function Dashboard() {
     setAtBottom(atBottomNow);
   };
 
-  // Scroll to bottom on first load of chat
   useEffect(() => {
     if (id) {
       setTimeout(scrollToBottom, 100);
@@ -132,6 +133,18 @@ function Dashboard() {
     setCanScroll(scrollHeight > clientHeight);
   }, [chat?.chats.length, typing]);
 
+  useEffect(() => {
+  if (id) {
+    setLoading(true);
+    const delay = Math.floor(Math.random() * 2000) + 1000;
+    setTimeout(() => {
+      setLoading(false);
+      scrollToBottom();
+    }, delay);
+  }
+}, [id]);
+
+
   return (
     <Wrapper>
       {isNewChat ? (
@@ -142,7 +155,11 @@ function Dashboard() {
         </EmptyChat>
       ) : (
         <ChatContainer ref={chatRef} onScroll={handleScroll}>
-          {chat?.chats.map((msg) => {
+          {loading && !chat ? (
+  Array.from({ length: 12 }).map((_, i) => (
+    <SkeletonBubble key={i} $align={i%2 === 0 ? "flex-start" : "flex-end"} />
+  ))
+) : chat?.chats.map((msg) => {
             const isUser = msg.from === "user";
             const align = isUser ? "flex-end" : "flex-start";
 
@@ -374,4 +391,19 @@ const Timestamp = styled.span<{ $align: string }>`
   color: #aaa;
   margin-left: 4px;
   align-self: ${(props) => props.$align};
+`;
+
+const SkeletonBubble = styled.div<{ $align: string }>`
+  width: 20%;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ddd 25%, #ccc 50%, #ddd 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  align-self: ${(props) => props.$align};
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
 `;

@@ -11,11 +11,12 @@ export function saveChats(chats: Chat[]): void {
 
 export function createChat(id: string): void {
   const chats = getChats();
-  if (chats.some(chat => chat.id === id)) return;
+  if (chats.some((chat) => chat.id === id)) return;
 
   const newChat: Chat = {
     id,
     chats: [],
+    date: new Date(),
   };
 
   chats.push(newChat);
@@ -23,16 +24,19 @@ export function createChat(id: string): void {
 }
 
 export function deleteChat(id: string): void {
-  const chats = getChats().filter(chat => chat.id !== id);
+  const chats = getChats().filter((chat) => chat.id !== id);
   saveChats(chats);
 }
 
-
-export function addMessageToChat(id: string, from: 'user' | 'ai', msg: string): void {
+export function addMessageToChat(
+  id: string,
+  from: "user" | "ai",
+  msg: string
+): void {
   const chats = getChats();
   const timestamp = new Date().toISOString();
 
-  const chat = chats.find(chat => chat.id === id);
+  const chat = chats.find((chat) => chat.id === id);
   if (!chat) return;
 
   chat.chats.push({ from, msg, timestamp });
@@ -41,5 +45,5 @@ export function addMessageToChat(id: string, from: 'user' | 'ai', msg: string): 
 
 export function getChatById(id: string): Chat | undefined {
   const chats = getChats();
-  return chats.find(chat => chat.id === id);
+  return chats.find((chat) => chat.id === id);
 }

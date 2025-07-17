@@ -10,7 +10,7 @@ export interface RootState {
 }
 
 export type NotificationType = {
-  type: 'success' | 'error'; 
+  type: "success" | "error";
   title: string;
   msg: string;
   time: Date;

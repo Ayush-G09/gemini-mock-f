@@ -1,11 +1,19 @@
 import styled from "styled-components";
 import userIcon from "../../../assets/gif/worker.gif";
+import Label from "../../../components/Label";
 
 function Header() {
   return (
     <StyledHeader>
+      <Label size="1.2rem" sx={{ marginRight: "auto" }} color="#a9a9a9">
+        Gemini
+      </Label>
       <UserAvatar>
-        <img alt="userIcon" src={userIcon} style={{ width: "2rem", height: "2rem" }} />
+        <img
+          alt="userIcon"
+          src={userIcon}
+          style={{ width: "2rem", height: "2rem" }}
+        />
       </UserAvatar>
     </StyledHeader>
   );

@@ -9,7 +9,12 @@ type OtpInputProps = {
   onChange: (value: string) => void;
 };
 
-const OtpInput: React.FC<OtpInputProps> = ({ value, onChange, active, error}) => {
+const OtpInput: React.FC<OtpInputProps> = ({
+  value,
+  onChange,
+  active,
+  error,
+}) => {
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   const handleChange = (index: number, digit: string) => {
@@ -34,32 +39,38 @@ const OtpInput: React.FC<OtpInputProps> = ({ value, onChange, active, error}) =>
   };
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column', width: '80%'}}>
-    <Wrapper>
-      {[...Array(6)].map((_, i) => (
-        <DigitInput
-          disabled={!active}
-          key={i}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={value[i] || ""}
-          onChange={(e) => handleChange(i, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(e, i)}
-          ref={(el) => {
-            inputsRef.current[i] = el;
-          }}
-        />
-      ))}
-    </Wrapper>
-    {error && (
+    <StyledOtp>
+      <Wrapper>
+        {[...Array(6)].map((_, i) => (
+          <DigitInput
+            disabled={!active}
+            key={i}
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={value[i] || ""}
+            onChange={(e) => handleChange(i, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, i)}
+            ref={(el) => {
+              inputsRef.current[i] = el;
+            }}
+          />
+        ))}
+      </Wrapper>
+      {error && (
         <Label size="0.8rem" sx={{ marginTop: "4px" }} color="red">
           {error}
         </Label>
       )}
-        </div>
+    </StyledOtp>
   );
 };
+
+const StyledOtp = styled.div`
+display: flex;
+flex-direction: column;
+width: 80%;
+`;
 
 const Wrapper = styled.div`
   display: flex;

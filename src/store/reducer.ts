@@ -13,7 +13,7 @@ const themeReducer = (state = initialState, action: actionType) => {
     case "SET_MODE":
       return { ...state, mode: action.payload };
 
-      case "ADD_NOTIFICATION":
+    case "ADD_NOTIFICATION":
       return {
         ...state,
         notifications: [...state.notifications, action.payload],
